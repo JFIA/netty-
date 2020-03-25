@@ -12,18 +12,17 @@ public class WSServer {
 
     public static void main(String[] args) throws InterruptedException {
 
-        EventLoopGroup fatherGroup=new NioEventLoopGroup();
-        EventLoopGroup childGroup =new NioEventLoopGroup();
+        EventLoopGroup fatherGroup = new NioEventLoopGroup();
+        EventLoopGroup childGroup = new NioEventLoopGroup();
 
         try {
 
             ServerBootstrap serverBootstrap = new ServerBootstrap();
-            serverBootstrap.group(fatherGroup, childGroup).childHandler(null).channel(NioServerSocketChannel.class);
+            serverBootstrap.group(fatherGroup, childGroup).childHandler(new WSServerInit()).channel(NioServerSocketChannel.class);
 
             ChannelFuture channelFuture = serverBootstrap.bind(8089).sync();
-            channelFuture.channel().close().sync();
-        }
-        finally {
+            channelFuture.channel().closeFuture().sync();
+        } finally {
             fatherGroup.shutdownGracefully();
             childGroup.shutdownGracefully();
         }
